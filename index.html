@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Harsh Kumar Mishra — AI Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #080B10;
+    --bg2: #0D1117;
+    --bg3: #111827;
+    --green: #00FF9C;
+    --green-dim: #00FF9C22;
+    --green-mid: #00FF9C55;
+    --blue: #5B8AF5;
+    --amber: #F5A623;
+    --text: #E2E8F0;
+    --muted: #64748B;
+    --border: #1E293B;
+    --card: #0D1117;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  #cursor {
+    position: fixed; width: 10px; height: 10px;
+    background: var(--green); border-radius: 50%;
+    pointer-events: none; z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s, width 0.2s, height 0.2s;
+    mix-blend-mode: screen;
+  }
+  #cursor-ring {
+    position: fixed; width: 36px; height: 36px;
+    border: 1px solid var(--green-mid); border-radius: 50%;
+    pointer-events: none; z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: transform 0.15s ease, width 0.2s, height 0.2s;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--green-mid); border-radius: 4px; }
+
+  /* Nav */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 60px;
+    background: linear-gradient(to bottom, rgba(8,11,16,0.95), transparent);
+    backdrop-filter: blur(8px);
+  }
+  .nav-logo {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.95rem; color: var(--green); letter-spacing: 2px;
+  }
+  .nav-links { display: flex; gap: 36px; list-style: none; }
+  .nav-links a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem; color: var(--muted);
+    text-decoration: none; letter-spacing: 1.5px;
+    text-transform: uppercase;
+    transition: color 0.2s;
+    position: relative;
+  }
+  .nav-links a::after {
+    content: ''; position: absolute; bottom: -4px; left: 0; right: 0;
+    height: 1px; background: var(--green);
+    transform: scaleX(0); transition: transform 0.2s;
+  }
+  .nav-links a:hover { color: var(--green); }
+  .nav-links a:hover::after { transform: scaleX(1); }
+
+  /* Grid background */
+  .grid-bg {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(0,255,156,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,156,0.025) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+  .grid-bg::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,255,156,0.04) 0%, transparent 70%);
+  }
+
+  /* Sections */
+  section { position: relative; z-index: 1; }
+
+  /* Hero */
+  #hero {
+    min-height: 100vh;
+    display: flex; align-items: center;
+    padding: 0 60px; padding-top: 100px;
+  }
+  .hero-inner { max-width: 900px; }
+  .hero-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem; color: var(--green);
+    letter-spacing: 3px; text-transform: uppercase;
+    margin-bottom: 24px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .hero-tag::before {
+    content: ''; display: inline-block;
+    width: 40px; height: 1px; background: var(--green);
+  }
+  h1.hero-name {
+    font-size: clamp(3rem, 7vw, 6rem);
+    font-weight: 800; line-height: 1;
+    color: #fff; margin-bottom: 16px;
+    letter-spacing: -2px;
+  }
+  h1.hero-name span { color: var(--green); }
+  .hero-role {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(1rem, 2vw, 1.3rem);
+    color: var(--muted); margin-bottom: 32px;
+    min-height: 2em;
+  }
+  .cursor-blink {
+    display: inline-block; width: 2px; height: 1.1em;
+    background: var(--green); margin-left: 4px;
+    vertical-align: middle;
+    animation: blink 1s step-end infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+  .hero-desc {
+    font-size: 1.05rem; color: var(--muted);
+    line-height: 1.8; max-width: 560px; margin-bottom: 48px;
+  }
+  .hero-buttons { display: flex; gap: 16px; flex-wrap: wrap; }
+  .btn-primary {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem; letter-spacing: 2px; text-transform: uppercase;
+    padding: 14px 32px; border: 1px solid var(--green);
+    background: var(--green-dim); color: var(--green);
+    text-decoration: none; transition: all 0.25s;
+    position: relative; overflow: hidden;
+  }
+  .btn-primary::before {
+    content: ''; position: absolute; inset: 0;
+    background: var(--green); transform: translateX(-100%);
+    transition: transform 0.25s;
+  }
+  .btn-primary:hover { color: #000; }
+  .btn-primary:hover::before { transform: translateX(0); }
+  .btn-primary span { position: relative; z-index: 1; }
+  .btn-secondary {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem; letter-spacing: 2px; text-transform: uppercase;
+    padding: 14px 32px; border: 1px solid var(--border);
+    background: transparent; color: var(--muted);
+    text-decoration: none; transition: all 0.25s;
+  }
+  .btn-secondary:hover { border-color: var(--muted); color: var(--text); }
+
+  .hero-stats {
+    display: flex; gap: 48px; margin-top: 72px;
+    border-top: 1px solid var(--border); padding-top: 40px;
+  }
+  .stat-item {}
+  .stat-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 2rem; font-weight: 700; color: var(--green);
+  }
+  .stat-label {
+    font-size: 0.78rem; color: var(--muted); margin-top: 4px;
+    letter-spacing: 1px; text-transform: uppercase;
+  }
+
+  /* About */
+  #about {
+    padding: 120px 60px;
+  }
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem; color: var(--green);
+    letter-spacing: 3px; text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-label::before {
+    content: '//'; color: var(--muted);
+  }
+  h2.section-title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800; color: #fff;
+    margin-bottom: 60px; letter-spacing: -1px;
+  }
+  .about-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+  }
+  .about-text p {
+    font-size: 1rem; color: var(--muted); line-height: 1.9;
+    margin-bottom: 20px;
+  }
+  .about-text p strong { color: var(--text); }
+  .about-terminal {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .terminal-header {
+    display: flex; align-items: center; gap: 8px;
+    padding: 12px 16px; background: var(--bg3);
+    border-bottom: 1px solid var(--border);
+  }
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .dot-red { background: #FF5F57; }
+  .dot-yellow { background: #FFBD2E; }
+  .dot-green { background: #28C840; }
+  .terminal-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; color: var(--muted); margin-left: 8px;
+  }
+  .terminal-body {
+    padding: 24px; font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem; line-height: 2;
+  }
+  .t-prompt { color: var(--green); }
+  .t-cmd { color: var(--text); }
+  .t-out { color: var(--muted); }
+  .t-key { color: var(--blue); }
+  .t-val { color: var(--amber); }
+  .t-line { margin-bottom: 2px; }
+
+  /* Skills */
+  #skills { padding: 120px 60px; background: var(--bg2); }
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+  }
+  .skill-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 28px;
+    transition: border-color 0.25s, transform 0.25s;
+    position: relative; overflow: hidden;
+  }
+  .skill-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0;
+    height: 2px; background: var(--green);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 0.3s;
+  }
+  .skill-card:hover { border-color: var(--green-mid); transform: translateY(-4px); }
+  .skill-card:hover::before { transform: scaleX(1); }
+  .skill-icon {
+    font-size: 1.5rem; margin-bottom: 16px;
+    width: 44px; height: 44px;
+    background: var(--green-dim); border: 1px solid var(--green-mid);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem; color: var(--green);
+  }
+  .skill-card-title {
+    font-weight: 700; font-size: 1rem; color: #fff;
+    margin-bottom: 16px;
+  }
+  .skill-tags {
+    display: flex; flex-wrap: wrap; gap: 8px;
+  }
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem; color: var(--muted);
+    background: var(--bg3); border: 1px solid var(--border);
+    padding: 4px 10px; letter-spacing: 0.5px;
+  }
+
+  /* Projects */
+  #projects { padding: 120px 60px; }
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 24px;
+  }
+  .project-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    padding: 32px;
+    transition: border-color 0.25s, transform 0.25s;
+    position: relative;
+  }
+  .project-card:hover { border-color: var(--green-mid); transform: translateY(-6px); }
+  .project-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; color: var(--green-mid);
+    letter-spacing: 2px; margin-bottom: 16px;
+  }
+  .project-title {
+    font-size: 1.2rem; font-weight: 700; color: #fff;
+    margin-bottom: 12px; line-height: 1.3;
+  }
+  .project-desc {
+    font-size: 0.88rem; color: var(--muted);
+    line-height: 1.8; margin-bottom: 24px;
+  }
+  .project-stack {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px;
+  }
+  .stack-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem; color: var(--green);
+    background: var(--green-dim); border: 1px solid var(--green-mid);
+    padding: 3px 10px; letter-spacing: 0.5px;
+  }
+  .project-links { display: flex; gap: 16px; }
+  .proj-link {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem; color: var(--muted);
+    text-decoration: none; letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: color 0.2s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .proj-link:hover { color: var(--green); }
+  .proj-link svg { width: 14px; height: 14px; }
+
+  /* Experience */
+  #experience { padding: 120px 60px; background: var(--bg2); }
+  .exp-timeline { position: relative; }
+  .exp-timeline::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 1px; background: var(--border);
+  }
+  .exp-item {
+    padding-left: 40px; margin-bottom: 60px; position: relative;
+  }
+  .exp-item::before {
+    content: ''; position: absolute; left: -5px; top: 8px;
+    width: 11px; height: 11px; border-radius: 50%;
+    background: var(--green); border: 2px solid var(--bg2);
+  }
+  .exp-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem; color: var(--green);
+    letter-spacing: 2px; margin-bottom: 8px;
+  }
+  .exp-role {
+    font-size: 1.2rem; font-weight: 700; color: #fff; margin-bottom: 4px;
+  }
+  .exp-company {
+    font-size: 0.9rem; color: var(--blue); margin-bottom: 16px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .exp-bullets { list-style: none; }
+  .exp-bullets li {
+    font-size: 0.88rem; color: var(--muted);
+    line-height: 1.8; margin-bottom: 8px;
+    padding-left: 20px; position: relative;
+  }
+  .exp-bullets li::before {
+    content: '›'; position: absolute; left: 0;
+    color: var(--green); font-size: 1rem;
+  }
+
+  /* Education */
+  #education { padding: 80px 60px 120px; }
+  .edu-card {
+    background: var(--bg2); border: 1px solid var(--border);
+    padding: 40px; max-width: 700px;
+    display: flex; gap: 32px; align-items: flex-start;
+    transition: border-color 0.25s;
+  }
+  .edu-card:hover { border-color: var(--green-mid); }
+  .edu-icon {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem; color: var(--green);
+    background: var(--green-dim); border: 1px solid var(--green-mid);
+    padding: 12px; white-space: nowrap;
+  }
+  .edu-degree {
+    font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 6px;
+  }
+  .edu-school {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem; color: var(--blue); margin-bottom: 8px;
+  }
+  .edu-year {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem; color: var(--muted);
+  }
+
+  /* Contact */
+  #contact { padding: 120px 60px; }
+  .contact-inner {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
+  }
+  .contact-left h2 { margin-bottom: 20px; }
+  .contact-left p {
+    font-size: 0.95rem; color: var(--muted); line-height: 1.9;
+    margin-bottom: 40px;
+  }
+  .contact-links { display: flex; flex-direction: column; gap: 16px; }
+  .contact-link {
+    display: flex; align-items: center; gap: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem; color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s; padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .contact-link:hover { color: var(--green); }
+  .contact-link-icon {
+    width: 36px; height: 36px; background: var(--green-dim);
+    border: 1px solid var(--green-mid);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; color: var(--green);
+  }
+  .contact-form {
+    display: flex; flex-direction: column; gap: 20px;
+  }
+  .form-group { display: flex; flex-direction: column; gap: 8px; }
+  .form-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem; color: var(--green);
+    letter-spacing: 2px; text-transform: uppercase;
+  }
+  .form-input, .form-textarea {
+    background: var(--bg2); border: 1px solid var(--border);
+    padding: 12px 16px; color: var(--text);
+    font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;
+    outline: none; transition: border-color 0.2s;
+    resize: none;
+  }
+  .form-input:focus, .form-textarea:focus { border-color: var(--green); }
+  .form-textarea { min-height: 120px; }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 60px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem; color: var(--muted);
+  }
+  footer span { color: var(--green); }
+
+  /* Fade-in animations */
+  .fade-up {
+    opacity: 0; transform: translateY(30px);
+    transition: opacity 0.7s, transform 0.7s;
+  }
+  .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 768px) {
+    nav { padding: 20px 24px; }
+    .nav-links { display: none; }
+    #hero, #about, #skills, #projects, #experience, #education, #contact { padding-left: 24px; padding-right: 24px; }
+    .about-grid, .contact-inner { grid-template-columns: 1fr; gap: 40px; }
+    .hero-stats { gap: 32px; }
+    footer { flex-direction: column; gap: 12px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+<div class="grid-bg"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">&gt; harsh.km_</div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">Available for Internships</div>
+    <h1 class="hero-name">Harsh Kumar<br/><span>Mishra</span></h1>
+    <div class="hero-role" id="typewriter"><span class="cursor-blink"></span></div>
+    <p class="hero-desc">
+      Aspiring AI Engineer passionate about machine learning, NLP, and visual data storytelling.
+      Building intelligent systems that turn raw data into real-world impact.
+    </p>
+    <div class="hero-buttons">
+      <a href="#projects" class="btn-primary"><span>View Projects</span></a>
+      <a href="#contact" class="btn-secondary">Get In Touch</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num">4+</div>
+        <div class="stat-label">Projects Built</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">87%</div>
+        <div class="stat-label">Best Model Accuracy</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">2025</div>
+        <div class="stat-label">B.Tech Grad Year</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-label">01 About</div>
+  <h2 class="section-title fade-up">Who I Am</h2>
+  <div class="about-grid">
+    <div class="about-text fade-up">
+      <p>I'm a <strong>Computer Science student at K.R. Mangalam University</strong>, Gurugram, with a deep focus on building practical AI systems. My work sits at the intersection of machine learning, natural language processing, and visual data communication.</p>
+      <p>I've built end-to-end ML pipelines — from raw data preprocessing to <strong>deployed Streamlit apps</strong> — and I care deeply about making AI outputs interpretable, visual, and human-friendly.</p>
+      <p>Currently exploring <strong>infographics for AI datasets</strong>, data validation workflows, and how high-quality visual data contributes to better LLM training outcomes.</p>
+    </div>
+    <div class="about-terminal fade-up">
+      <div class="terminal-header">
+        <div class="dot dot-red"></div>
+        <div class="dot dot-yellow"></div>
+        <div class="dot dot-green"></div>
+        <span class="terminal-title">harsh@portfolio ~ profile.json</span>
+      </div>
+      <div class="terminal-body">
+        <div class="t-line"><span class="t-prompt">$ </span><span class="t-cmd">cat profile.json</span></div>
+        <div class="t-line">{</div>
+        <div class="t-line">&nbsp;&nbsp;<span class="t-key">"name"</span>: <span class="t-val">"Harsh Kumar Mishra"</span>,</div>
+        <div class="t-line">&nbsp;&nbsp;<span class="t-key">"role"</span>: <span class="t-val">"AI Engineer (Intern)"</span>,</div>
+        <div class="t-line">&nbsp;&nbsp;<span class="t-key">"location"</span>: <span class="t-val">"Gurugram, India"</span>,</div>
+        <div class="t-line">&nbsp;&nbsp;<span class="t-key">"education"</span>: <span class="t-val">"B.Tech CS, 2023-2027"</span>,</div>
+        <div class="t-line">&nbsp;&nbsp;<span class="t-key">"focus"</span>: [</div>
+        <div class="t-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-val">"Machine Learning"</span>,</div>
+        <div class="t-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-val">"NLP"</span>,</div>
+        <div class="t-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-val">"Visual Data Design"</span></div>
+        <div class="t-line">&nbsp;&nbsp;],</div>
+        <div class="t-line">&nbsp;&nbsp;<span class="t-key">"status"</span>: <span class="t-val">"open_to_work"</span></div>
+        <div class="t-line">}</div>
+        <div class="t-line" style="margin-top:8px;"><span class="t-prompt">$ </span><span class="cursor-blink"></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="section-label">02 Skills</div>
+  <h2 class="section-title fade-up">Tech Stack</h2>
+  <div class="skills-grid">
+    <div class="skill-card fade-up">
+      <div class="skill-icon">ML</div>
+      <div class="skill-card-title">Machine Learning</div>
+      <div class="skill-tags">
+        <span class="tag">Scikit-learn</span>
+        <span class="tag">Random Forest</span>
+        <span class="tag">Gradient Boosting</span>
+        <span class="tag">Feature Engineering</span>
+        <span class="tag">Model Evaluation</span>
+      </div>
+    </div>
+    <div class="skill-card fade-up">
+      <div class="skill-icon">NLP</div>
+      <div class="skill-card-title">Natural Language Processing</div>
+      <div class="skill-tags">
+        <span class="tag">NLTK</span>
+        <span class="tag">TF-IDF</span>
+        <span class="tag">Text Classification</span>
+        <span class="tag">Text Preprocessing</span>
+      </div>
+    </div>
+    <div class="skill-card fade-up">
+      <div class="skill-icon">PY</div>
+      <div class="skill-card-title">Python & Data</div>
+      <div class="skill-tags">
+        <span class="tag">Python</span>
+        <span class="tag">Pandas</span>
+        <span class="tag">NumPy</span>
+        <span class="tag">EDA</span>
+        <span class="tag">Data Cleaning</span>
+        <span class="tag">OpenCV</span>
+      </div>
+    </div>
+    <div class="skill-card fade-up">
+      <div class="skill-icon">VIZ</div>
+      <div class="skill-card-title">Data Visualization</div>
+      <div class="skill-tags">
+        <span class="tag">Matplotlib</span>
+        <span class="tag">Seaborn</span>
+        <span class="tag">Infographic Design</span>
+        <span class="tag">Visual Hierarchy</span>
+        <span class="tag">Canva</span>
+      </div>
+    </div>
+    <div class="skill-card fade-up">
+      <div class="skill-icon">DEV</div>
+      <div class="skill-card-title">Dev Tools</div>
+      <div class="skill-tags">
+        <span class="tag">Streamlit</span>
+        <span class="tag">Git</span>
+        <span class="tag">GitHub</span>
+        <span class="tag">Jupyter</span>
+        <span class="tag">VS Code</span>
+      </div>
+    </div>
+    <div class="skill-card fade-up">
+      <div class="skill-icon">AI</div>
+      <div class="skill-card-title">AI Concepts</div>
+      <div class="skill-tags">
+        <span class="tag">RLHF</span>
+        <span class="tag">SFT</span>
+        <span class="tag">LLM Pipelines</span>
+        <span class="tag">Supervised Learning</span>
+        <span class="tag">Classification</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="section-label">03 Projects</div>
+  <h2 class="section-title fade-up">Things I've Built</h2>
+  <div class="projects-grid">
+
+    <div class="project-card fade-up">
+      <div class="project-num">01 // Featured</div>
+      <div class="project-title">AI Dataset Visual Analyzer</div>
+      <div class="project-desc">A Streamlit web app that transforms any CSV dataset into infographic-quality visual dashboards. Auto-generates quality scores, missing value heatmaps, feature distributions, and correlation matrices — built for AI training pipeline workflows.</div>
+      <div class="project-stack">
+        <span class="stack-tag">Python</span>
+        <span class="stack-tag">Streamlit</span>
+        <span class="stack-tag">Matplotlib</span>
+        <span class="stack-tag">Seaborn</span>
+        <span class="stack-tag">Pandas</span>
+      </div>
+      <div class="project-links">
+        <a href="https://github.com/HarshMishra16/AI-Dataset-Visual-Analyzer" class="proj-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+          GitHub
+        </a>
+      </div>
+    </div>
+
+    <div class="project-card fade-up">
+      <div class="project-num">02</div>
+      <div class="project-title">Mental Health Crisis Detection (NLP)</div>
+      <div class="project-desc">NLP-based text classification system that detects mental health crisis indicators with ~87% accuracy. Features real-time crisis probability scoring, visual analytics dashboards, and emergency helpline integration in a Streamlit UI.</div>
+      <div class="project-stack">
+        <span class="stack-tag">Python</span>
+        <span class="stack-tag">NLTK</span>
+        <span class="stack-tag">TF-IDF</span>
+        <span class="stack-tag">Scikit-learn</span>
+        <span class="stack-tag">Streamlit</span>
+      </div>
+      <div class="project-links">
+        <a href="https://github.com/HarshMishra" class="proj-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+          GitHub
+        </a>
+      </div>
+    </div>
+
+    <div class="project-card fade-up">
+      <div class="project-num">03</div>
+      <div class="project-title">AI Powered Women Safety Application</div>
+      <div class="project-desc">Built an AI-powered women's safety solution for real-time risk detection, automated alerts, and emergency response support
+        <span class="stack-tag">Python</span>
+        <span class="stack-tag">Scikit-learn</span>
+        <span class="stack-tag">Pandas</span>
+        <span class="stack-tag">Seaborn</span>
+        <span class="stack-tag">Streamlit</span>
+      </div>
+      <div class="project-links">
+        <a href="https://github.com/HarshMishra16/Minor-Project_VYBE-Wizards_3rd-year" class="proj-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+          GitHub
+        </a>
+      </div>
+    </div>
+
+    <div class="project-card fade-up">
+      <div class="project-num">04</div>
+      <div class="project-title">AI-Powered Women Safety Application</div>
+      <div class="project-desc">AI-enabled safety application with automated alert, real-time monitoring, and emergency support features. Designed backend logic for structured event handling, safety workflows, and emergency response triggers.</div>
+      <div class="project-stack">
+        <span class="stack-tag">Python</span>
+        <span class="stack-tag">OpenCV</span>
+        <span class="stack-tag">Scikit-learn</span>
+        <span class="stack-tag">Streamlit</span>
+      </div>
+      <div class="project-links">
+        <a href="https://github.com/HarshMishra" class="proj-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+          GitHub
+        </a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="section-label">04 Experience</div>
+  <h2 class="section-title fade-up">Work History</h2>
+  <div class="exp-timeline">
+    <div class="exp-item fade-up">
+      <div class="exp-date">JUN 2025 — JUL 2025</div>
+      <div class="exp-role">Artificial Intelligence Intern</div>
+      <div class="exp-company">Alfido Tech · Gurugram, India</div>
+      <ul class="exp-bullets">
+        <li>Performed data preprocessing and EDA using Python on structured datasets, generating visual insight reports.</li>
+        <li>Built and evaluated ML models using Scikit-learn, creating performance visualizations including confusion matrices and ROC curves.</li>
+        <li>Conducted comparative experiments across multiple models to improve prediction accuracy and reliability.</li>
+        <li>Automated repetitive data processing workflows using Python scripts, improving pipeline efficiency.</li>
+      </ul>
+    </div>
+    <div class="exp-item fade-up">
+      <div class="exp-date">2023 — PRESENT CGPA: 8.1/10</div>
+      <div class="exp-role">B.Tech Computer Science</div>
+      <div class="exp-company">K.R. Mangalam University · Gurugram, India</div>
+      <ul class="exp-bullets">
+        <li>Pursuing core coursework in Machine Learning, AI Fundamentals, Data Structures, and Database Systems.</li>
+        <li>Building real-world ML projects with end-to-end deployment using Streamlit.</li>
+        <li>Exploring visual data design and its role in AI data pipelines and LLM training workflows.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-label">05 Contact</div>
+  <h2 class="section-title fade-up">Let's Talk</h2>
+  <div class="contact-inner">
+    <div class="contact-left fade-up">
+      <p>I'm currently looking for internship opportunities in AI, data, and visual design. If you're working on something exciting — let's connect.</p>
+      <div class="contact-links">
+        <a href="mailto:harshkittu3366@gmail.com" class="contact-link">
+          <div class="contact-link-icon">@</div>
+          harshkittu3366@gmail.com
+        </a>
+        <a href="tel:+917410938463" class="contact-link">
+          <div class="contact-link-icon">#</div>
+          +91 7410938463
+        </a>
+        <a href="https://linkedin.com/in/harsh-kumar-mishra" target="_blank" class="contact-link">
+          <div class="contact-link-icon">in</div>
+          linkedin.com/in/harsh-kumar-mishra
+        </a>
+        <a href="https://github.com/HarshMishra" target="_blank" class="contact-link">
+          <div class="contact-link-icon">gh</div>
+          github.com/HarshMishra
+        </a>
+      </div>
+    </div>
+    <div class="contact-form fade-up">
+      <div class="form-group">
+        <label class="form-label">Name</label>
+        <input type="text" class="form-input" placeholder="Your name" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-input" placeholder="your@email.com" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Message</label>
+        <textarea class="form-textarea" placeholder="What's on your mind?"></textarea>
+      </div>
+      <a href="mailto:harshkittu3366@gmail.com" class="btn-primary" style="text-align:center; display:block;">
+        <span>Send Message</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>Designed & Built by <span>Harsh Kumar Mishra</span></div>
+  <div><span>harsh.km_</span> · 2026</div>
+</footer>
+
+<script>
+  // Cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursor-ring');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cursor.style.left = mx + 'px'; cursor.style.top = my + 'px'; });
+  function animRing() { rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12; ring.style.left = rx + 'px'; ring.style.top = ry + 'px'; requestAnimationFrame(animRing); }
+  animRing();
+  document.querySelectorAll('a, button, .skill-card, .project-card').forEach(el => {
+    el.addEventListener('mouseenter', () => { cursor.style.width = '6px'; cursor.style.height = '6px'; ring.style.width = '52px'; ring.style.height = '52px'; });
+    el.addEventListener('mouseleave', () => { cursor.style.width = '10px'; cursor.style.height = '10px'; ring.style.width = '36px'; ring.style.height = '36px'; });
+  });
+
+  // Typewriter
+  const roles = ['AI Engineer', 'ML Developer', 'Visual Data Designer', 'NLP Enthusiast'];
+  let ri = 0, ci = 0, deleting = false;
+  const tw = document.getElementById('typewriter');
+  function type() {
+    const role = roles[ri];
+    if (!deleting) {
+      tw.innerHTML = role.slice(0, ci + 1) + '<span class="cursor-blink"></span>';
+      ci++;
+      if (ci === role.length) { deleting = true; setTimeout(type, 1800); return; }
+      setTimeout(type, 80);
+    } else {
+      tw.innerHTML = role.slice(0, ci - 1) + '<span class="cursor-blink"></span>';
+      ci--;
+      if (ci === 0) { deleting = false; ri = (ri + 1) % roles.length; setTimeout(type, 400); return; }
+      setTimeout(type, 45);
+    }
+  }
+  setTimeout(type, 800);
+
+  // Scroll fade
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), 100);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
